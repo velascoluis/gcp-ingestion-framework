@@ -1,0 +1,7 @@
+config {
+  type: "declaration",
+  database: "gcp-ingestion-framework-366114",  
+  schema: "staging",
+  name: "customers_raw",
+  description : "Customer data staged. External PARQUET"
+}

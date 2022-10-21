@@ -1,0 +1,11 @@
+config {
+    type: "table",
+    schema: "curated",
+    tags: ["ingested"],
+    assertions : {
+        rowConditions: ["Churn =  0 or Churn = 1"],
+        nonNull: ["customerId"],
+        uniqueKey: ["customerId"]
+                }
+    } 
+SELECT * FROM ${ref("customers_raw")}

@@ -30,7 +30,7 @@ ingest_stage_bucket         = "ingest-stage-bucket-${local.project_id}"
 ingest_code_bucket          = "ingest-code-bucket-${local.project_id}"
 vpc_nm                      = "ingest-vpc-${local.project_id}"
 ingest_subnet_nm            = "ingest-snet"
-ingesr_subnet_cidr          = "10.0.0.0/16"
+ingest_subnet_cidr          = "10.0.0.0/16"
 psa_ip_length               = 16
 bq_ds_raw                   = "ds_raw"
 bq_ds_curated               = "ds_curated"
@@ -56,26 +56,7 @@ resource "google_project_service" "enable_compute_google_apis" {
   disable_dependent_services = true
 }
 
-resource "google_project_service" "enable_container_google_apis" {
-  project = local.project_id
-  service = "container.googleapis.com"
-  disable_dependent_services = true
-  
-}
 
-resource "google_project_service" "enable_containerregistry_google_apis" {
-  project = local.project_id
-  service = "containerregistry.googleapis.com"
-  disable_dependent_services = true
-  
-}
-
-resource "google_project_service" "enable_dataproc_google_apis" {
-  project = local.project_id
-  service = "dataproc.googleapis.com"
-  disable_dependent_services = true
-  
-}
 
 resource "google_project_service" "enable_bigquery_google_apis" {
   project = local.project_id
@@ -84,6 +65,14 @@ resource "google_project_service" "enable_bigquery_google_apis" {
   
 }
 
+resource "google_project_service" "enable_bigqueryconnection_google_apis" {
+  project = local.project_id
+  service = "bigqueryconnection.googleapis.com"
+  disable_dependent_services = true
+  
+}
+
+
 resource "google_project_service" "enable_storage_google_apis" {
   project = local.project_id
   service = "storage.googleapis.com"
@@ -91,19 +80,6 @@ resource "google_project_service" "enable_storage_google_apis" {
   
 }
 
-resource "google_project_service" "enable_notebooks_google_apis" {
-  project = local.project_id
-  service = "notebooks.googleapis.com"
-  disable_dependent_services = true
-  
-}
-
-resource "google_project_service" "enable_aiplatform_google_apis" {
-  project = local.project_id
-  service = "aiplatform.googleapis.com"
-  disable_dependent_services = true
-  
-}
 
 resource "google_project_service" "enable_logging_google_apis" {
   project = local.project_id
@@ -125,26 +101,6 @@ resource "google_project_service" "enable_servicenetworking_google_apis" {
   
 }
 
-resource "google_project_service" "enable_cloudbuild_google_apis" {
-  project = local.project_id
-  service = "cloudbuild.googleapis.com"
-  disable_dependent_services = true
-  
-}
-
-resource "google_project_service" "enable_artifactregistry_google_apis" {
-  project = local.project_id
-  service = "artifactregistry.googleapis.com"
-  disable_dependent_services = true
-  
-}
-
-resource "google_project_service" "enable_cloudresourcemanager_google_apis" {
-  project = local.project_id
-  service = "cloudresourcemanager.googleapis.com"
-  disable_dependent_services = true
-  
-}
 
 resource "google_project_service" "enable_composer_google_apis" {
   project = local.project_id
@@ -152,36 +108,17 @@ resource "google_project_service" "enable_composer_google_apis" {
   disable_dependent_services = true
 }
 
-resource "google_project_service" "enable_functions_google_apis" {
+resource "google_project_service" "enable_dataplex_google_apis" {
   project = local.project_id
-  service = "cloudfunctions.googleapis.com"
+  service = "dataplex.googleapis.com"
   disable_dependent_services = true
 }
 
-resource "google_project_service" "enable_pubsub_google_apis" {
+resource "google_project_service" "enable_dataform_google_apis" {
   project = local.project_id
-  service = "pubsub.googleapis.com"
+  service = "dataform.googleapis.com"
   disable_dependent_services = true
 }
-
-resource "google_project_service" "enable_dpms_google_apis" {
-  project = local.project_id
-  service = "metastore.googleapis.com"
-  disable_dependent_services = true
-}
-
-resource "google_project_service" "enable_cloudrun_admin_google_apis" {
-  project = local.project_id
-  service = "run.googleapis.com"
-  disable_dependent_services = true
-}
-
-resource "google_project_service" "enable_cloudscheduler_google_apis" {
-  project = local.project_id
-  service = "cloudscheduler.googleapis.com"
-  disable_dependent_services = true
-}
-
 
 
 /*******************************************
@@ -189,27 +126,18 @@ Introducing sleep to minimize errors from
 dependencies having not completed
 ********************************************/
 resource "time_sleep" "sleep_after_api_enabling" {
-  create_duration = "300s"
+  create_duration = "60s"
   depends_on = [
     google_project_service.enable_orgpolicy_google_apis,
     google_project_service.enable_compute_google_apis,
-    google_project_service.enable_container_google_apis,
-    google_project_service.enable_containerregistry_google_apis,
-    google_project_service.enable_dataproc_google_apis,
     google_project_service.enable_bigquery_google_apis,
+    google_project_service.enable_bigqueryconnection_google_apis,
     google_project_service.enable_storage_google_apis,
     google_project_service.enable_servicenetworking_google_apis,
-    google_project_service.enable_aiplatform_google_apis,
-    google_project_service.enable_notebooks_google_apis,
-    google_project_service.enable_cloudbuild_google_apis,
-    google_project_service.enable_artifactregistry_google_apis,
-    google_project_service.enable_cloudresourcemanager_google_apis,
     google_project_service.enable_composer_google_apis,
-    google_project_service.enable_functions_google_apis,
-    google_project_service.enable_pubsub_google_apis,
-    google_project_service.enable_cloudrun_admin_google_apis,
-    google_project_service.enable_dpms_google_apis,
-    google_project_service.enable_cloudscheduler_google_apis
+    google_project_service.enable_dataplex_google_apis,
+    google_project_service.enable_dataform_google_apis,
+
   ]
 }
 
@@ -364,7 +292,7 @@ Introducing sleep to minimize errors from
 dependencies having not completed
 ********************************************/
 resource "time_sleep" "sleep_after_identities_permissions" {
-  create_duration = "120s"
+  create_duration = "60s"
   depends_on = [
     module.umsa_creation,
     module.umsa_role_grants,
@@ -445,7 +373,7 @@ Introducing sleep to minimize errors from
 dependencies having not completed
 ********************************************/
 resource "time_sleep" "sleep_after_network_and_firewall_creation" {
-  create_duration = "120s"
+  create_duration = "60s"
   depends_on = [
     module.vpc_creation,
     google_compute_firewall.allow_intra_snet_ingress_to_any
@@ -501,9 +429,9 @@ Copy of datasets to bucket
  ******************************************/
 
 resource "google_storage_bucket_object" "datasets_upload_to_gcs" {
-  for_each = fileset("${path.module}/sample_data/", "*")
+  for_each = fileset("${path.module}/sample_data/customers/", "*")
   source = "${path.module}/sample_data/${each.value}"
-  name = "${each.value}"
+  name = "customers/${each.value}"
   bucket = "${local.ingest_stage_bucket}"
   depends_on = [
     time_sleep.sleep_after_bucket_creation
@@ -530,7 +458,7 @@ dependencies having not completed
 ********************************************/
 
 resource "time_sleep" "sleep_after_network_and_storage_steps" {
-  create_duration = "120s"
+  create_duration = "60s"
   depends_on = [
       time_sleep.sleep_after_network_and_firewall_creation,
       time_sleep.sleep_after_bucket_creation,
@@ -584,7 +512,7 @@ resource "google_bigquery_table" "create_biglake_table_sample" {
     autodetect    = true
     source_format = "PARQUET"
     connection_id = google_bigquery_connection.external_bigquery_connection_creation.name
-    source_uris   = [format("%s/*.parquet", local.ingest_stage_bucket)]
+    source_uris   = [format("gs://%s/*.parquet", local.ingest_stage_bucket)]
   }
   deletion_protection = false
    depends_on = [
@@ -676,7 +604,7 @@ dependencies having not completed
 
 
 resource "time_sleep" "sleep_after_composer_creation" {
-  create_duration = "180s"
+  create_duration = "60s"
   depends_on = [
       google_composer_environment.cloud_composer_env_creation
   ]

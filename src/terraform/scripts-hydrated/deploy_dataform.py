@@ -28,29 +28,20 @@ def get_repo_files(project_id,location,repository_name,bq_dataset_name):
             "path" : ".gitignore",
             "contents" : "node_modules/".format(repository_name).encode('ascii')
         },
-          {
-            "path" : "definitions/service_data.sqlx",
-            "contents" : read_file_and_replace("../scripts-templates/service_data.sqlx",project_id,location,repository_name,bq_dataset_name).encode('ascii')
-        },
-
+          
         {
-            "path" : "definitions/customer_data.sqlx",
-            "contents" : read_file_and_replace("../scripts-templates/customer_data.sqlx",project_id,location,repository_name,bq_dataset_name).encode('ascii')
+            "path" : "definitions/raw_customer_data.sqlx",
+            "contents" : read_file_and_replace("raw_customer_data.sqlx",project_id,location,repository_name,bq_dataset_name).encode('ascii')
         },
         {
-        "path" : "definitions/customer_augmented.sqlx",
-        "contents" : read_file_and_replace("../scripts-templates/customer_augmented.sqlx",project_id,location,repository_name,bq_dataset_name).encode('ascii')
-        },
-                {
-        "path" : "definitions/churn_classifier.sqlx",
-        "contents" : read_file_and_replace("../scripts-templates/churn_classifier.sqlx",project_id,location,repository_name,bq_dataset_name).encode('ascii')
+        "path" : "definitions/curated_customer_data.sqlx",
+        "contents" : read_file_and_replace("curated_customer_data.sqlx",project_id,location,repository_name,bq_dataset_name).encode('ascii')
         }
-
         
     ]
 }
 
-def bootstrap_dataform(project_id,location,repository_name,workspace_name,bq_dataset_name):
+def deploy_ingest_framework_dataform(project_id,location,repository_name,workspace_name,bq_dataset_name):
 
     client = dataform_v1beta1.DataformClient()
     try:
@@ -103,4 +94,4 @@ if __name__ == "__main__":
     parser.add_argument('--workspace_name', type=str)
     parser.add_argument('--bq_dataset_name', type=str)
     params = parser.parse_args()
-    bootstrap_dataform(params.project_id,params.location,params.repository_name,params.workspace_name,params.bq_dataset_name)
+    deploy_ingest_framework_dataform(params.project_id,params.location,params.repository_name,params.workspace_name,params.bq_dataset_name)
