@@ -520,6 +520,32 @@ resource "google_bigquery_table" "create_biglake_table_sample" {
   ]
 }
 
+data "google_compute_default_service_account" "default" {
+  depends_on = [time_sleep.sleep_after_api_enabling]
+}
+
+/********************************************************
+Dataform SA permissions
+********************************************************/
+
+module "dataform_sa_role_grants_cc" {
+  source                  = "terraform-google-modules/iam/google//modules/member_iam"
+  service_account_address = format("%s-%s@%s","service",split("-", "${data.google_compute_default_service_account.default.email}")[0],"gcp-sa-dataform.iam.gserviceaccount.com")
+   #The split part deals with extracting the project nbr from the default compute engine service account
+  prefix                  = "serviceAccount"
+  project_id              = local.project_id
+  project_roles = [
+    
+    "roles/bigquery.user",
+    "roles/bigquery.Jobuser",
+    "roles/bigquery.dataEditor",
+    "roles/bigquery.dataViewer",
+    "roles/storage.admin"
+  ]
+   depends_on = [
+        google_project_iam_member.grant_editor_default_compute
+  ]  
+}
 
 
 /********************************************************
@@ -527,9 +553,7 @@ Create Composer Environment
 ********************************************************/
 
 # IAM role grants to Google Managed Service Account for Compute Engine (for Cloud Composer 2 to download images)
-data "google_compute_default_service_account" "default" {
-  depends_on = [time_sleep.sleep_after_api_enabling]
-}
+
 resource "google_project_iam_member" "grant_editor_default_compute" {
     project = "${local.project_id}"
     role =  "roles/editor"
