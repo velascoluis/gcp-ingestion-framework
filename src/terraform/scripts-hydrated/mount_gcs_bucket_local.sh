@@ -15,29 +15,43 @@
 # Purpose: Mount a GCS bucket locally
 #........................................................................
 
-GCSFUSE_BIN=`which gcsfuse`
 
 if [ "${#}" -ne 3 ]; then
     echo "Illegal number of parameters. Exiting ..."
     echo "Usage: ${0} <gcp_project_id> <gcp_bucket> <path> "
     echo "Exiting ..."
-    exit
+fi
+
+PLAT=`uname`
+if [ ! "${PLAT}" = "Linux" ]; then
+   echo "This script needs to be executed on Linux"
+   exit 1
+fi
+
+GCSFUSE_BIN=`which gcsfuse`
+if [ ! $? -eq 0 ];then
+        echo "gcsfuse not installed - Deploying it ..."
+        export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
+        echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+        sudo apt-get update
+        sudo apt-get install gcsfuse
+        GCSFUSE_BIN=`which gcsfuse`
 fi
 
 
 GCP_PROJECT_ID=${1}
 GCP_BUCKET=${2}
-PATH=${3}
+GCS_PATH=${HOME}/${3}
 
-
+mkdir -p ${GCS_PATH}
 LOG_DATE=`date`
 echo "###########################################################################################"
-echo "${LOG_DATE} Mounting ${GCP_BUCKET} on ${PATH}..."
+echo "${LOG_DATE} Mounting ${GCP_BUCKET} on ${GCS_PATH}..."
 
-${GCSFUSE_BIN} ${GCP_BUCKET} ${PATH}
+${GCSFUSE_BIN} ${GCP_BUCKET} ${GCS_PATH}
 
 
 LOG_DATE=`date`
 echo "###########################################################################################"
 echo "${LOG_DATE} Execution finished! ..."
-
