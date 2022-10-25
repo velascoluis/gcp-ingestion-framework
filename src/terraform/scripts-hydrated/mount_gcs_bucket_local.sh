@@ -42,13 +42,14 @@ fi
 
 GCP_PROJECT_ID=${1}
 GCP_BUCKET=${2}
-GCS_PATH=${HOME}/${3}
+GCS_PATH=${3}
 
 mkdir -p ${GCS_PATH}
 LOG_DATE=`date`
 echo "###########################################################################################"
 echo "${LOG_DATE} Mounting ${GCP_BUCKET} on ${GCS_PATH}..."
-
+echo "Unmount first .."
+sudo umount ${GCS_PATH}
 ${GCSFUSE_BIN} ${GCP_BUCKET} ${GCS_PATH}
 
 

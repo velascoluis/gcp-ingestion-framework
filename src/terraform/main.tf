@@ -428,10 +428,20 @@ resource "time_sleep" "sleep_after_bucket_creation" {
 Copy of datasets to bucket
  ******************************************/
 
-resource "google_storage_bucket_object" "datasets_upload_to_gcs" {
+resource "google_storage_bucket_object" "customer_datasets_upload_to_gcs" {
   for_each = fileset("${path.module}/sample_data/customers/", "*")
-  source = "${path.module}/sample_data/${each.value}"
-  name = "customers/${each.value}"
+  source = "${path.module}/sample_data/customers/${each.value}"
+  name = "customers_raw/${each.value}"
+  bucket = "${local.ingest_stage_bucket}"
+  depends_on = [
+    time_sleep.sleep_after_bucket_creation
+  ]
+}
+
+resource "google_storage_bucket_object" "service_datasets_upload_to_gcs" {
+  for_each = fileset("${path.module}/sample_data/service/", "*")
+  source = "${path.module}/sample_data/service/${each.value}"
+  name = "service_raw/${each.value}"
   bucket = "${local.ingest_stage_bucket}"
   depends_on = [
     time_sleep.sleep_after_bucket_creation
@@ -462,7 +472,8 @@ resource "time_sleep" "sleep_after_network_and_storage_steps" {
   depends_on = [
       time_sleep.sleep_after_network_and_firewall_creation,
       time_sleep.sleep_after_bucket_creation,
-      google_storage_bucket_object.datasets_upload_to_gcs,
+      google_storage_bucket_object.customer_datasets_upload_to_gcs,
+      google_storage_bucket_object.service_datasets_upload_to_gcs,
   ]
 }
 
