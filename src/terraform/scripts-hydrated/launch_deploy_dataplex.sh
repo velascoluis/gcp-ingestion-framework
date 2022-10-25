@@ -22,9 +22,14 @@ echo "${LOG_DATE} launch dataplex deploy   .."
 
 
 PROJECT_ID=`"${GCLOUD_BIN}" config list --format "value(core.project)" 2>/dev/null`
+echo "PROJECT_ID: ${PROJECT_ID}"
 GCP_REGION=`"${GCLOUD_BIN}" compute project-info describe --project ${PROJECT_ID} --format "value(commonInstanceMetadata.google-compute-default-region)" 2>/dev/null`
+echo "GCP_REGION: ${GCP_REGION}"
 BQ_DATASET_NAME="curated"
+echo "BQ_DATASET_NAME: ${BQ_DATASET_NAME}"
 RAW_GCS_BUCKET_NAME="ingest-stage-bucket-${PROJECT_ID}"
+echo "RAW_GCS_BUCKET_NAME: ${RAW_GCS_BUCKET_NAME}"
+
 
 
 ${PYTHON_BIN} -m venv local_test_env

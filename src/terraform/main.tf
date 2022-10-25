@@ -36,6 +36,7 @@ bq_ds_raw                   = "ds_raw"
 bq_ds_curated               = "ds_curated"
 composer_img_version        = "composer-2.0.11-airflow-2.2.3"
 cloud_scheduler_timezone    = "America/Chicago"
+dpms_nm                     = "ingest-dpms-${local.project_id}"
 }
 
 
@@ -121,6 +122,14 @@ resource "google_project_service" "enable_dataform_google_apis" {
 }
 
 
+resource "google_project_service" "enable_metastore_google_apis" {
+  project = local.project_id
+  service = "metastore.googleapis.com"
+  disable_dependent_services = true
+}
+
+
+
 /*******************************************
 Introducing sleep to minimize errors from
 dependencies having not completed
@@ -137,6 +146,7 @@ resource "time_sleep" "sleep_after_api_enabling" {
     google_project_service.enable_composer_google_apis,
     google_project_service.enable_dataplex_google_apis,
     google_project_service.enable_dataform_google_apis,
+    google_project_service.enable_metastore_google_apis,
 
   ]
 }
@@ -628,6 +638,39 @@ resource "google_composer_environment" "cloud_composer_env_creation" {
   timeouts {
     create = "90m"
   } 
+}
+
+
+/******************************************
+Create Dataproc Metastore
+******************************************/
+resource "google_dataproc_metastore_service" "datalake_metastore_creation" {
+  service_id = local.dpms_nm
+  location   = local.location
+  tier       = "DEVELOPER"
+  network    = "projects/${local.project_id}/global/networks/${local.vpc_nm}"
+
+  maintenance_window {
+    hour_of_day = 2
+    day_of_week = "SUNDAY"
+  }
+
+  hive_metastore_config {
+    version = "3.1.2"
+    endpoint_protocol = "GRPC"
+  }
+
+metadata_integration {
+  data_catalog_config {
+    enabled = true
+  }
+}
+
+  depends_on = [
+        module.administrator_role_grants,
+        time_sleep.sleep_after_network_and_storage_steps,
+        time_sleep.sleep_after_api_enabling
+  ] 
 }
 
 

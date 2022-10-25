@@ -2,6 +2,6 @@ config {
   type: "declaration",
   database: "PROJECT_ID",  
   schema: "staging",
-  name: "customers_raw",
-  description : "Customer data staged. External PARQUET"
+  name: "service_raw",
+  description : "Service data staged. External CSV"
 }
