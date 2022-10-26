@@ -219,7 +219,9 @@ module "umsa_role_grants" {
     "roles/logging.logWriter",
     "roles/viewer",
     "roles/composer.worker",
-    "roles/composer.admin"
+    "roles/composer.admin",
+    "roles/dataform.admin",
+    
   ]
   depends_on = [
     module.umsa_creation
@@ -531,10 +533,7 @@ module "gmsa_role_grants_cc" {
   project_id              = local.project_id
   project_roles = [
     
-    "roles/composer.ServiceAgentV2Ext",
-    "roles/dataform.editor",
-    "roles/composer.worker"
-    
+    "roles/composer.ServiceAgentV2Ext"
 
   ]
    depends_on = [
