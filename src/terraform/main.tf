@@ -34,7 +34,7 @@ ingest_subnet_cidr          = "10.0.0.0/16"
 psa_ip_length               = 16
 bq_ds_raw                   = "ds_raw"
 bq_ds_curated               = "ds_curated"
-composer_img_version        = "composer-2.0.11-airflow-2.2.3"
+composer_img_version        = "composer-2.0.29-airflow-2.3.3"
 cloud_scheduler_timezone    = "America/Chicago"
 dpms_nm                     = "ingest-dpms-${local.project_id}"
 }

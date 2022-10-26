@@ -6,10 +6,15 @@ def deploy_ingest_framework_dataplex(project_id,location,bq_dataset_name,bucket_
 
     #Create lake
     client = dataplex_v1.services.dataplex_service.DataplexServiceClient()
+
     lake_id = "ingestion-framework-datalake"
+    metastore_id = "ingest-vpc-{}".format(project_id)
     lake_request = dataplex_v1.CreateLakeRequest(
             parent="projects/{}/locations/{}".format(project_id,location),
-            lake_id=lake_id
+            lake_id=lake_id,
+            lake=dataplex_v1.types.Lake(
+                metastore=dataplex_v1.types.Lake.Metastore(service="projects/{}/locations/{}/services/{}".format(project_id,location,metastore_id))
+            )
     )
     try:
         print("Creating lake: {} ...".format(lake_id))
