@@ -34,7 +34,7 @@ ingest_subnet_cidr          = "10.0.0.0/16"
 psa_ip_length               = 16
 bq_ds_raw                   = "ds_raw"
 bq_ds_curated               = "ds_curated"
-composer_img_version        = "composer-2.0.29-airflow-2.3.3"
+composer_img_version        = "composer-2.0.29-airflow-2.2.5"
 cloud_scheduler_timezone    = "America/Chicago"
 dpms_nm                     = "ingest-dpms-${local.project_id}"
 }
@@ -493,57 +493,13 @@ resource "time_sleep" "sleep_after_network_and_storage_steps" {
 BigQuery dataset creation
 ******************************************/
 
-resource "google_bigquery_dataset" "bq_dataset_ds_raw_creation" {
-  dataset_id                  = local.bq_ds_raw
-  location                    = local.location_multi
-}
 
 resource "google_bigquery_dataset" "bq_dataset_ds_curated_creation" {
   dataset_id                  = local.bq_ds_curated
-  location                    = local.location_multi
+  location                    = local.location
 }
 
-/******************************************
-BigQuery connection creation for BigLake
-******************************************/
 
-resource "google_bigquery_connection" "external_bigquery_connection_creation" {
-  location      = local.location
-  connection_id = "biglake-inestion"
-  cloud_resource {}
-  depends_on = [
-    time_sleep.sleep_after_network_and_storage_steps
-  ]
-}
-
-resource "google_project_iam_member" "connection_grant_biglake" {
-  project  = local.project_id
-  role     = "roles/storage.objectViewer"
-  member   = format("serviceAccount:%s", google_bigquery_connection.external_bigquery_connection_creation.cloud_resource[0].service_account_id)
-}
-
-/******************************************
-BigQuery table (external parquet)
-******************************************/
-
-resource "google_bigquery_table" "create_biglake_table_sample" {
-  dataset_id = local.bq_ds_raw
-  table_id   = "customer_data"
-  external_data_configuration {
-    autodetect    = true
-    source_format = "PARQUET"
-    connection_id = google_bigquery_connection.external_bigquery_connection_creation.name
-    source_uris   = [format("gs://%s/*.parquet", local.ingest_stage_bucket)]
-  }
-  deletion_protection = false
-   depends_on = [
-    time_sleep.sleep_after_network_and_storage_steps
-  ]
-}
-
-data "google_compute_default_service_account" "default" {
-  depends_on = [time_sleep.sleep_after_api_enabling]
-}
 
 /********************************************************
 Dataform SA permissions
@@ -558,7 +514,7 @@ module "dataform_sa_role_grants_cc" {
   project_roles = [
     
     "roles/bigquery.user",
-    "roles/bigquery.Jobuser",
+    "roles/bigquery.jobUser",
     "roles/bigquery.dataEditor",
     "roles/bigquery.dataViewer",
     "roles/storage.admin"
