@@ -36,6 +36,14 @@ def get_repo_files(project_id,location,repository_name,bq_dataset_name):
         {
         "path" : "definitions/curated_customer_data.sqlx",
         "contents" : read_file_and_replace("curated_customer_data.sqlx",project_id,location,repository_name,bq_dataset_name).encode('ascii')
+        },
+        {
+            "path" : "definitions/raw_service_data.sqlx",
+            "contents" : read_file_and_replace("raw_service_data.sqlx",project_id,location,repository_name,bq_dataset_name).encode('ascii')
+        },
+        {
+        "path" : "definitions/curated_customer_data.sqlx",
+        "contents" : read_file_and_replace("curated_customer_data.sqlx",project_id,location,repository_name,bq_dataset_name).encode('ascii')
         }
         
     ]

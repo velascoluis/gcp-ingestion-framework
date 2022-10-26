@@ -1,0 +1,9 @@
+config {
+    type: "table",
+    schema: "curated",
+    tags: ["ingested"],
+    assertions : {
+        nonNull: ["CellName"],
+                }
+    } 
+SELECT * FROM ${ref("service_raw")}

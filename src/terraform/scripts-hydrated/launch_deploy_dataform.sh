@@ -22,7 +22,7 @@ echo "${LOG_DATE} launch dataform deploy   .."
 
 PROJECT_ID=`"${GCLOUD_BIN}" config list --format "value(core.project)" 2>/dev/null`
 GCP_REGION=`"${GCLOUD_BIN}" compute project-info describe --project ${PROJECT_ID} --format "value(commonInstanceMetadata.google-compute-default-region)" 2>/dev/null`
-
+PROJECT_NUMBER=`"${GCLOUD_BIN}" projects list --filter="${PROJECT_ID}" --format="value(PROJECT_NUMBER)" 2>/dev/null`
 
 DATAFORM_REPO_NAME="ingestion_framework_repo"
 DATAFORM_WORKSPACE_NAME="ingestion_framework_ws"
@@ -33,3 +33,25 @@ source local_test_env/bin/activate
 pip3 install -r requirements.txt
 python3 deploy_dataform.py --project_id ${PROJECT_ID} --location ${GCP_REGION} --repository_name ${DATAFORM_REPO_NAME} --workspace_name ${DATAFORM_WORKSPACE_NAME} --bq_dataset_name ${BQ_DATASET_NAME} 
 deactivate
+
+LOG_DATE=`date`
+echo "###########################################################################################"
+echo "${LOG_DATE} Sleeping 1m to propagate changes   .."
+
+sleep 60
+
+LOG_DATE=`date`
+echo "###########################################################################################"
+echo "${LOG_DATE} Adding roles to the dataform SA   .."
+
+DATAFORM_SA_ROLES_LIST="roles/bigquery.user roles/bigquery.jobUser roles/bigquery.dataEditor roles/bigquery.dataViewer roles/storage.admin"
+DATAFORM_SA="service-${PROJECT_NUMBER}@gcp-sa-dataform.iam.gserviceaccount.com"
+for ROLE_NAME in ${DATAFORM_SA_ROLES_LIST}
+do
+  LOG_DATE=`date`
+  echo "${LOG_DATE} Adding role .. " ${ROLE_NAME}
+  ${GCLOUD_BIN} projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:${DATAFORM_SA} --role ${ROLE_NAME}
+done
+
+
+   
