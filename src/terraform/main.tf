@@ -505,6 +505,12 @@ resource "google_bigquery_dataset" "bq_dataset_ds_curated_creation" {
 Dataform SA permissions
 ********************************************************/
 
+data "google_compute_default_service_account" "default" {
+  depends_on = [time_sleep.sleep_after_api_enabling]
+}
+
+
+
 module "dataform_sa_role_grants_cc" {
   source                  = "terraform-google-modules/iam/google//modules/member_iam"
   service_account_address = format("%s-%s@%s","service",split("-", "${data.google_compute_default_service_account.default.email}")[0],"gcp-sa-dataform.iam.gserviceaccount.com")
