@@ -8,7 +8,7 @@ def deploy_ingest_framework_dataplex(project_id,location,bq_dataset_name,bucket_
     client = dataplex_v1.services.dataplex_service.DataplexServiceClient()
 
     lake_id = "ingestion-framework-datalake"
-    metastore_id = "ingest-vpc-{}".format(project_id)
+    metastore_id = "ingest-dpms-{}".format(project_id)
     lake_request = dataplex_v1.CreateLakeRequest(
             parent="projects/{}/locations/{}".format(project_id,location),
             lake_id=lake_id,
