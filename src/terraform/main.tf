@@ -37,6 +37,7 @@ bq_ds_curated               = "curated"
 composer_img_version        = "composer-2.0.29-airflow-2.2.5"
 cloud_scheduler_timezone    = "America/Chicago"
 dpms_nm                     = "ingest-dpms-${local.project_id}"
+is_out_qwiklabs             = true
 }
 
 
@@ -157,6 +158,7 @@ resource "time_sleep" "sleep_after_api_enabling" {
  *****************************************/
 
 resource "null_resource" "install_gcloud" {
+  count = local.is_out_qwiklabs ? 0 : 1
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
     command     = "rm -rf /root/google-cloud-sdk; curl https://sdk.cloud.google.com > install.sh; bash install.sh --disable-prompts; source /root/google-cloud-sdk/path.bash.inc"
@@ -167,6 +169,7 @@ resource "null_resource" "install_gcloud" {
 
 
 resource "null_resource" "install_docker" {
+  count = local.is_out_qwiklabs ? 0 : 1
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
     command     = "curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh"
@@ -176,6 +179,7 @@ resource "null_resource" "install_docker" {
 
 
 resource "null_resource" "install_wget" {
+  count = local.is_out_qwiklabs ? 0 : 1
   provisioner "local-exec" {
     interpreter = ["bash", "-exc"]
     command     = "apt-get update &&  apt-get install wget"
