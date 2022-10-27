@@ -28,14 +28,15 @@ def deploy_ingest_framework_dataplex(project_id,location,bq_dataset_name,bucket_
         "location_type" : "SINGLE_REGION",
         "zone_id" : "staging",
         "assets" : [ { "type" : "STORAGE_BUCKET" , "name": "projects/{}/buckets/{}".format(project_id,bucket_name) , "asset_id" : bucket_name }  ]
-    },
-    {
-        "type" : "CURATED",
-        "location_type" : "SINGLE_REGION",
-        "zone_id" : "curated",
+    }
+    #,
+    #{
+    #    "type" : "CURATED",
+    #    "location_type" : "SINGLE_REGION",
+    #    "zone_id" : "curated",
         #"assets" :   [ { "type" : "BIGQUERY_DATASET" , "name": "projects/{}/datasets/{}".format(project_id,bq_dataset_name) , "asset_id" : bq_dataset_name.replace("_","-") }  ]
-
-    }]
+    #}
+    ]
     for zone_desc in zone_desc_list:
         zone = dataplex_v1.Zone()
         if 'type' in zone_desc:
