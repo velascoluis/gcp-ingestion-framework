@@ -53,6 +53,19 @@ git clone https://github.com/velascoluis/gcp-ingestion-framework.git
 ```bash
 $> local_project_launcher.sh.sh <gcp_project_id> <gcp_region> <gcp_zone> <gcp_user_id>
 ```
+- Navigate to `gcp-ingestion-framework/src/terraform/scripts-hydrated/` and execute:
+```bash
+$> source setup_ingest_framework_files.sh
+```
+- Navigate to `gcp-ingestion-framework/src/terraform/scripts-hydrated/ingestion_framework` and execute:
+```bash
+$> source launch_deploy_dataplex.sh
+$> source launch_deploy_dataform.sh
+$> source upload_dag.sh
+```
+
+
+
 This step will deploy all the required components on your project (see architecture below), it should take around 30 minutes.
 The following items will be deployed:
 
