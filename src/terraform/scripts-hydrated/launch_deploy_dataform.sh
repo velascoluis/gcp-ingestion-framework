@@ -15,13 +15,21 @@ GCLOUD_BIN=`which gcloud`
 PYTHON_BIN=`which python3`
 PIP_BIN=`which pip3`
 
+if [ "${#}" -ne 1 ]; then
+    echo "Illegal number of parameters. Exiting ..."
+    echo "Usage: ${0} <gcp_region>"
+    echo "Exiting ..."
+fi
+
 
 LOG_DATE=`date`
 echo "###########################################################################################"
 echo "${LOG_DATE} launch dataform deploy   .."
 
 PROJECT_ID=`"${GCLOUD_BIN}" config list --format "value(core.project)" 2>/dev/null`
-GCP_REGION=`"${GCLOUD_BIN}" compute project-info describe --project ${PROJECT_ID} --format "value(commonInstanceMetadata.google-compute-default-region)" 2>/dev/null`
+GCP_REGION=${1}
+#Workaround until automate this step
+#GCP_REGION=`"${GCLOUD_BIN}" compute project-info describe --project ${PROJECT_ID} --format "value(commonInstanceMetadata.google-compute-default-region)" 2>/dev/null`
 PROJECT_NUMBER=`"${GCLOUD_BIN}" projects list --filter="${PROJECT_ID}" --format="value(PROJECT_NUMBER)" 2>/dev/null`
 
 DATAFORM_REPO_NAME="ingestion_framework_repo"

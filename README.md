@@ -59,8 +59,8 @@ $> source setup_ingest_framework_files.sh
 ```
 - Navigate to `gcp-ingestion-framework/src/terraform/scripts-hydrated/ingestion_framework` and execute:
 ```bash
-$> source launch_deploy_dataplex.sh
-$> source launch_deploy_dataform.sh
+$> source launch_deploy_dataplex.sh  <gcp_region>
+$> source launch_deploy_dataform.sh  <gcp_region>
 $> source upload_dag.sh
 ```
 
